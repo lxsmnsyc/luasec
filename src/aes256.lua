@@ -341,29 +341,81 @@ local function AddRoundKey(data, ciphers, round)
         data[i] = gadd(data[i], ciphers[round*16 + i])
     end
 end
-
 local function KeySchedule(ciphers, round)
     local prev = round - 1
-    local p, n = prev*16, round*16
-    ciphers[n + 0x0] = gadd(ciphers[p + 0x0], sbox[ciphers[p + 0x7]], rcon[n])
-    ciphers[n + 0x4] = gadd(ciphers[p + 0x4], sbox[ciphers[p + 0xB]])
-    ciphers[n + 0x8] = gadd(ciphers[p + 0x8], sbox[ciphers[p + 0xF]])
-    ciphers[n + 0xC] = gadd(ciphers[p + 0xC], sbox[ciphers[p + 0x3]])
+    local p, n = prev*32, round*32
+    -- Key Schedule Core    
+    --[[
+        This operation is used as an inner loop in the key schedule, and is done in the following manner:
 
-    ciphers[n + 0x1] = gadd(ciphers[p + 0x1], ciphers[p + 0x0])
-    ciphers[n + 0x5] = gadd(ciphers[p + 0x5], ciphers[p + 0x4])
-    ciphers[n + 0x9] = gadd(ciphers[p + 0x9], ciphers[p + 0x8])
-    ciphers[n + 0xD] = gadd(ciphers[p + 0xD], ciphers[p + 0xC])
+        The input is a 32-bit word and an iteration number i. The output is a 32-bit word.
+        Copy the input over to the output.
+        Use the above described rotate operation to rotate the output eight bits to the left
+        Apply Rijndael's S-box on all four individual bytes in the output word
+        On just the first (leftmost) byte of the output word, 
+        Exclusive OR the byte with 2 to the power of (i-1) in Rijndael's finite field. 
+        In other words, perform the rcon operation with i as the input, 
+        and exclusive or(XOR) the rcon output with the first byte of the output word
 
-    ciphers[n + 0x2] = gadd(ciphers[p + 0x2], ciphers[p + 0x1])
-    ciphers[n + 0x6] = gadd(ciphers[p + 0x6], ciphers[p + 0x5])
-    ciphers[n + 0xA] = gadd(ciphers[p + 0xA], ciphers[p + 0x9])
-    ciphers[n + 0xE] = gadd(ciphers[p + 0xE], ciphers[p + 0xD])
+        Map:
+
+        00 01 02 03 04 05 06 07 
+        08 09 0A 0B 0C 0D 0E 0F
+        10 11 12 13 14 15 16 17 
+        18 19 1A 1B 1C 1D 1E 1F
+    ]]
+    ciphers[n + 0x00] = gadd(ciphers[p + 0x00], sbox[ciphers[p + 0x0F]], rcon[round])
+    ciphers[n + 0x08] = gadd(ciphers[p + 0x08], sbox[ciphers[p + 0x17]])
+    ciphers[n + 0x10] = gadd(ciphers[p + 0x10], sbox[ciphers[p + 0x1F]])
+    ciphers[n + 0x18] = gadd(ciphers[p + 0x18], sbox[ciphers[p + 0x07]])
+
+    --[[
+        We assign the value of the previous 4 bytes in the expanded key to t
+        We exclusive-OR t with the four-byte block n bytes before the new expanded key. 
+        This becomes the next 4 bytes in the expanded key
+    ]]
+    ciphers[n + 0x01] = gadd(ciphers[p + 0x01], ciphers[p + 0x00])
+    ciphers[n + 0x09] = gadd(ciphers[p + 0x09], ciphers[p + 0x08])
+    ciphers[n + 0x11] = gadd(ciphers[p + 0x11], ciphers[p + 0x10])
+    ciphers[n + 0x19] = gadd(ciphers[p + 0x19], ciphers[p + 0x18])
+
+    ciphers[n + 0x02] = gadd(ciphers[p + 0x02], ciphers[p + 0x01])
+    ciphers[n + 0x0A] = gadd(ciphers[p + 0x0A], ciphers[p + 0x09])
+    ciphers[n + 0x12] = gadd(ciphers[p + 0x12], ciphers[p + 0x11])
+    ciphers[n + 0x1A] = gadd(ciphers[p + 0x1A], ciphers[p + 0x19])
     
-    ciphers[n + 0x3] = gadd(ciphers[p + 0x3], ciphers[p + 0x2])
-    ciphers[n + 0x7] = gadd(ciphers[p + 0x7], ciphers[p + 0x6])
-    ciphers[n + 0xB] = gadd(ciphers[p + 0xB], ciphers[p + 0xA])
-    ciphers[n + 0xF] = gadd(ciphers[p + 0xF], ciphers[p + 0xE])
+    ciphers[n + 0x03] = gadd(ciphers[p + 0x03], ciphers[p + 0x02])
+    ciphers[n + 0x0B] = gadd(ciphers[p + 0x0B], ciphers[p + 0x0A])
+    ciphers[n + 0x13] = gadd(ciphers[p + 0x13], ciphers[p + 0x12])
+    ciphers[n + 0x1B] = gadd(ciphers[p + 0x1B], ciphers[p + 0x1A])
+
+    --[[
+        If we are processing a 256-bit key, we do the following to generate the next 4 bytes of expanded key:
+
+        We assign the value of the previous 4 bytes in the expanded key to t
+        We run each of the 4 bytes in t through Rijndael's S-box
+        We exclusive-OR t with the 4-byte block n bytes before the new expanded key. 
+        This becomes the next 4 bytes in the expanded key.
+    ]]
+    ciphers[n + 0x04] = gadd(ciphers[p + 0x04], sbox[ciphers[p + 0x03]])
+    ciphers[n + 0x0C] = gadd(ciphers[p + 0x0C], sbox[ciphers[p + 0x0B]])
+    ciphers[n + 0x14] = gadd(ciphers[p + 0x14], sbox[ciphers[p + 0x13]])
+    ciphers[n + 0x1C] = gadd(ciphers[p + 0x1C], sbox[ciphers[p + 0x1B]])
+
+    ciphers[n + 0x05] = gadd(ciphers[p + 0x05], ciphers[p + 0x04])
+    ciphers[n + 0x0D] = gadd(ciphers[p + 0x0D], ciphers[p + 0x0C])
+    ciphers[n + 0x15] = gadd(ciphers[p + 0x15], ciphers[p + 0x14])
+    ciphers[n + 0x1D] = gadd(ciphers[p + 0x1D], ciphers[p + 0x1C])
+    
+    ciphers[n + 0x06] = gadd(ciphers[p + 0x06], ciphers[p + 0x05])
+    ciphers[n + 0x0E] = gadd(ciphers[p + 0x0E], ciphers[p + 0x0D])
+    ciphers[n + 0x16] = gadd(ciphers[p + 0x16], ciphers[p + 0x15])
+    ciphers[n + 0x1E] = gadd(ciphers[p + 0x1E], ciphers[p + 0x1D])
+    
+    ciphers[n + 0x07] = gadd(ciphers[p + 0x07], ciphers[p + 0x06])
+    ciphers[n + 0x0F] = gadd(ciphers[p + 0x0F], ciphers[p + 0x0E])
+    ciphers[n + 0x17] = gadd(ciphers[p + 0x17], ciphers[p + 0x16])
+    ciphers[n + 0x1F] = gadd(ciphers[p + 0x1F], ciphers[p + 0x1E])
 end 
 
 local m = {}
@@ -371,10 +423,10 @@ m.__index = m
 
 local function buildCiphers(cipher)
     local ciphers = {}
-    for i = 0, 16 do
+    for i = 0, 31 do
         ciphers[i] = cipher[i]
     end
-    for round = 1, 10 do
+    for round = 1, 14 do
         KeySchedule(ciphers, round)
     end  
     return ciphers   
@@ -389,7 +441,7 @@ end
 local function encrypt(self, data)
     AddRoundKey(data, self.ciphers, 0)
 
-    for i = 1, 9 do
+    for i = 1, 13 do
         SubBytes(data)
         ShiftRows(data)
         MixColumns(data)
@@ -401,16 +453,16 @@ local function encrypt(self, data)
     SubBytes(data)
     ShiftRows(data)
 
-    AddRoundKey(data, self.ciphers, 0xA)
+    AddRoundKey(data, self.ciphers, 0xE)
 end
 
 
 local function decrypt(self, data)
-    AddRoundKey(data, self.ciphers, 0xA)
+    AddRoundKey(data, self.ciphers, 0xE)
     InvShiftRows(data)
     InvSubBytes(data)
 
-    for i = 9, 1, -1 do
+    for i = 13, 1, -1 do
         AddRoundKey(data, self.ciphers, i)
         InvMixColumns(data)
         InvShiftRows(data)
