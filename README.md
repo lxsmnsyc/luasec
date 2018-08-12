@@ -2,7 +2,10 @@
 Crypto-related algorithms (encryption, hash, etc.)
 
 Includes (currently):
-- SHA-224
-- SHA-256
+- SHA-224 (only capable of < 0xFFFFFFFF - 512 bits of message)
+- SHA-256 (only capable of < 0xFFFFFFFF - 512 bits of message)
 
-To run tests, simply run "luasec.test.<lib-name>"
+I am currently writing an int64 emulator library so that every library can handle 64-bits of information
+(lua can only handle 2^53 bits)
+
+To run tests, simply run "require "luasec.test.<lib-name>" " on LuaJIT
