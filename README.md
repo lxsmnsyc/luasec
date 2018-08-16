@@ -2,8 +2,12 @@
 Crypto-related algorithms (encryption, hash, etc.)
 
 Includes (currently):
-- SHA-224 (only capable of < 0xFFFFFFFF - 512 bits of message)
-- SHA-256 (only capable of < 0xFFFFFFFF - 512 bits of message)
+- SHA-224
+- SHA-256
+- SHA-512
+- SHA-384
+- SHA-512/224
+- SHA-512/256
 - AES-128
 - AES-192
 - AES-256
