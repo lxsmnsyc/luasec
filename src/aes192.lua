@@ -1,4 +1,6 @@
-
+--[[
+    https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
+]]
 local bit = require "bit"
 
 local AND, OR, NOT, XOR = bit.band, bit.bor, bit.bnot, bit.bxor 
@@ -104,7 +106,7 @@ local atable = {
 }
 
 local gmult = {
-    [2] = {
+    [0x2] = {
     [0]=0x00,0x02,0x04,0x06,0x08,0x0a,0x0c,0x0e,0x10,0x12,0x14,0x16,0x18,0x1a,0x1c,0x1e,
         0x20,0x22,0x24,0x26,0x28,0x2a,0x2c,0x2e,0x30,0x32,0x34,0x36,0x38,0x3a,0x3c,0x3e,
         0x40,0x42,0x44,0x46,0x48,0x4a,0x4c,0x4e,0x50,0x52,0x54,0x56,0x58,0x5a,0x5c,0x5e,
@@ -123,7 +125,7 @@ local gmult = {
         0xfb,0xf9,0xff,0xfd,0xf3,0xf1,0xf7,0xf5,0xeb,0xe9,0xef,0xed,0xe3,0xe1,0xe7,0xe5
     },
 
-    [3] = {
+    [0x3] = {
     [0]=0x00,0x03,0x06,0x05,0x0c,0x0f,0x0a,0x09,0x18,0x1b,0x1e,0x1d,0x14,0x17,0x12,0x11,
         0x30,0x33,0x36,0x35,0x3c,0x3f,0x3a,0x39,0x28,0x2b,0x2e,0x2d,0x24,0x27,0x22,0x21,
         0x60,0x63,0x66,0x65,0x6c,0x6f,0x6a,0x69,0x78,0x7b,0x7e,0x7d,0x74,0x77,0x72,0x71,
@@ -142,7 +144,7 @@ local gmult = {
         0x0b,0x08,0x0d,0x0e,0x07,0x04,0x01,0x02,0x13,0x10,0x15,0x16,0x1f,0x1c,0x19,0x1a
     },
 
-    [9] =  {
+    [0x9] =  {
     [0]=0x00,0x09,0x12,0x1b,0x24,0x2d,0x36,0x3f,0x48,0x41,0x5a,0x53,0x6c,0x65,0x7e,0x77,
         0x90,0x99,0x82,0x8b,0xb4,0xbd,0xa6,0xaf,0xd8,0xd1,0xca,0xc3,0xfc,0xf5,0xee,0xe7,
         0x3b,0x32,0x29,0x20,0x1f,0x16,0x0d,0x04,0x73,0x7a,0x61,0x68,0x57,0x5e,0x45,0x4c,
@@ -161,7 +163,7 @@ local gmult = {
         0x31,0x38,0x23,0x2a,0x15,0x1c,0x07,0x0e,0x79,0x70,0x6b,0x62,0x5d,0x54,0x4f,0x46
     },
 
-    [11] = {
+    [0xB] = {
     [0]=0x00,0x0b,0x16,0x1d,0x2c,0x27,0x3a,0x31,0x58,0x53,0x4e,0x45,0x74,0x7f,0x62,0x69,
         0xb0,0xbb,0xa6,0xad,0x9c,0x97,0x8a,0x81,0xe8,0xe3,0xfe,0xf5,0xc4,0xcf,0xd2,0xd9,
         0x7b,0x70,0x6d,0x66,0x57,0x5c,0x41,0x4a,0x23,0x28,0x35,0x3e,0x0f,0x04,0x19,0x12,
@@ -180,7 +182,7 @@ local gmult = {
         0xca,0xc1,0xdc,0xd7,0xe6,0xed,0xf0,0xfb,0x92,0x99,0x84,0x8f,0xbe,0xb5,0xa8,0xa3
     },
 
-    [13] = {
+    [0xD] = {
     [0]=0x00,0x0d,0x1a,0x17,0x34,0x39,0x2e,0x23,0x68,0x65,0x72,0x7f,0x5c,0x51,0x46,0x4b,
         0xd0,0xdd,0xca,0xc7,0xe4,0xe9,0xfe,0xf3,0xb8,0xb5,0xa2,0xaf,0x8c,0x81,0x96,0x9b,
         0xbb,0xb6,0xa1,0xac,0x8f,0x82,0x95,0x98,0xd3,0xde,0xc9,0xc4,0xe7,0xea,0xfd,0xf0,
@@ -199,7 +201,7 @@ local gmult = {
         0xdc,0xd1,0xc6,0xcb,0xe8,0xe5,0xf2,0xff,0xb4,0xb9,0xae,0xa3,0x80,0x8d,0x9a,0x97
     },
 
-    [14] = {
+    [0xE] = {
     [0]=0x00,0x0e,0x1c,0x12,0x38,0x36,0x24,0x2a,0x70,0x7e,0x6c,0x62,0x48,0x46,0x54,0x5a,
         0xe0,0xee,0xfc,0xf2,0xd8,0xd6,0xc4,0xca,0x90,0x9e,0x8c,0x82,0xa8,0xa6,0xb4,0xba,
         0xdb,0xd5,0xc7,0xc9,0xe3,0xed,0xff,0xf1,0xab,0xa5,0xb7,0xb9,0x93,0x9d,0x8f,0x81,
@@ -221,7 +223,6 @@ local gmult = {
 local function gadd(a, ...)
     return AND(XOR(a, ...), 0xff)
 end  
-
 --[[
 local function gmul(a, b)
     a = AND(a, 0xff)
@@ -230,15 +231,17 @@ local function gmul(a, b)
         return 0
     end
     local s = ltable[a] + ltable[b]
-    s = AND(s, 0xff)
+    if(s > 0xff) then 
+        s = s - 0xff
+    end
     return atable[s]
 end
-]]--
-
+]]
+--
 local function gmul(a, b)
+    if(a == 0x1) then return b end
     return gmult[a][b]
 end
-
 local function SubBytes(a)
     for i = 0, 15 do
         a[i] = sbox[a[i]]
@@ -276,130 +279,72 @@ local function InvShiftRows(a)
 end
 
 local function MixColumns(a)
-    local col = 0
-    local r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0x2, r1), gmul(0x3, r2), (r3), (r4))
-    a[col + 0x4] = gadd((r1), gmul(0x2, r2), gmul(0x3, r3), (r4))
-    a[col + 0x8] = gadd((r1), (r2), gmul(0x2, r3), gmul(0x3, r4))
-    a[col + 0xC] = gadd(gmul(0x3, r1), (r2), (r3), gmul(0x2, r4))
-
-    col = col + 1
-    r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0x2, r1), gmul(0x3, r2), (r3), (r4))
-    a[col + 0x4] = gadd((r1), gmul(0x2, r2), gmul(0x3, r3), (r4))
-    a[col + 0x8] = gadd((r1), (r2), gmul(0x2, r3), gmul(0x3, r4))
-    a[col + 0xC] = gadd(gmul(0x3, r1), (r2), (r3), gmul(0x2, r4))
-
-    col = col + 1
-    r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0x2, r1), gmul(0x3, r2), (r3), (r4))
-    a[col + 0x4] = gadd((r1), gmul(0x2, r2), gmul(0x3, r3), (r4))
-    a[col + 0x8] = gadd((r1), (r2), gmul(0x2, r3), gmul(0x3, r4))
-    a[col + 0xC] = gadd(gmul(0x3, r1), (r2), (r3), gmul(0x2, r4))
-
-    col = col + 1
-    r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0x2, r1), gmul(0x3, r2), (r3), (r4))
-    a[col + 0x4] = gadd((r1), gmul(0x2, r2), gmul(0x3, r3), (r4))
-    a[col + 0x8] = gadd((r1), (r2), gmul(0x2, r3), gmul(0x3, r4))
-    a[col + 0xC] = gadd(gmul(0x3, r1), (r2), (r3), gmul(0x2, r4))
+    for c = 0, 3 do 
+        local r1, r2, r3, r4 = a[4*c + 0x0], a[4*c + 0x1], a[4*c + 0x2], a[4*c + 0x3]
+        a[4*c + 0x0] = gadd(gmul(0x2, r1), gmul(0x3, r2), gmul(0x1, r3), gmul(0x1, r4))
+        a[4*c + 0x1] = gadd(gmul(0x1, r1), gmul(0x2, r2), gmul(0x3, r3), gmul(0x1, r4))
+        a[4*c + 0x2] = gadd(gmul(0x1, r1), gmul(0x1, r2), gmul(0x2, r3), gmul(0x3, r4))
+        a[4*c + 0x3] = gadd(gmul(0x3, r1), gmul(0x1, r2), gmul(0x1, r3), gmul(0x2, r4))
+    end
 end 
  
 
 local function InvMixColumns(a)
-    local col = 0
-    local r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0xE, r1), gmul(0xB, r2), gmul(0xD, r3), gmul(0x9, r4))
-    a[col + 0x4] = gadd(gmul(0x9, r1), gmul(0xE, r2), gmul(0xB, r3), gmul(0xD, r4))
-    a[col + 0x8] = gadd(gmul(0xD, r1), gmul(0x9, r2), gmul(0xE, r3), gmul(0xB, r4))
-    a[col + 0xC] = gadd(gmul(0xB, r1), gmul(0xD, r2), gmul(0x9, r3), gmul(0xE, r4))
-
-    col = col + 1
-    r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0xE, r1), gmul(0xB, r2), gmul(0xD, r3), gmul(0x9, r4))
-    a[col + 0x4] = gadd(gmul(0x9, r1), gmul(0xE, r2), gmul(0xB, r3), gmul(0xD, r4))
-    a[col + 0x8] = gadd(gmul(0xD, r1), gmul(0x9, r2), gmul(0xE, r3), gmul(0xB, r4))
-    a[col + 0xC] = gadd(gmul(0xB, r1), gmul(0xD, r2), gmul(0x9, r3), gmul(0xE, r4))
-
-    col = col + 1
-    r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0xE, r1), gmul(0xB, r2), gmul(0xD, r3), gmul(0x9, r4))
-    a[col + 0x4] = gadd(gmul(0x9, r1), gmul(0xE, r2), gmul(0xB, r3), gmul(0xD, r4))
-    a[col + 0x8] = gadd(gmul(0xD, r1), gmul(0x9, r2), gmul(0xE, r3), gmul(0xB, r4))
-    a[col + 0xC] = gadd(gmul(0xB, r1), gmul(0xD, r2), gmul(0x9, r3), gmul(0xE, r4))
-
-    col = col + 1
-    r1, r2, r3, r4 = a[col + 0x0], a[col + 0x4], a[col + 0x8], a[col + 0xC]
-    a[col + 0x0] = gadd(gmul(0xE, r1), gmul(0xB, r2), gmul(0xD, r3), gmul(0x9, r4))
-    a[col + 0x4] = gadd(gmul(0x9, r1), gmul(0xE, r2), gmul(0xB, r3), gmul(0xD, r4))
-    a[col + 0x8] = gadd(gmul(0xD, r1), gmul(0x9, r2), gmul(0xE, r3), gmul(0xB, r4))
-    a[col + 0xC] = gadd(gmul(0xB, r1), gmul(0xD, r2), gmul(0x9, r3), gmul(0xE, r4))
+    for c = 0, 3 do 
+        local r1, r2, r3, r4 = a[4*c + 0x0], a[4*c + 0x1], a[4*c + 0x2], a[4*c + 0x3]
+        a[4*c + 0x0] = gadd(gmul(0xE, r1), gmul(0xB, r2), gmul(0xD, r3), gmul(0x9, r4))
+        a[4*c + 0x1] = gadd(gmul(0x9, r1), gmul(0xE, r2), gmul(0xB, r3), gmul(0xD, r4))
+        a[4*c + 0x2] = gadd(gmul(0xD, r1), gmul(0x9, r2), gmul(0xE, r3), gmul(0xB, r4))
+        a[4*c + 0x3] = gadd(gmul(0xB, r1), gmul(0xD, r2), gmul(0x9, r3), gmul(0xE, r4))
+    end
 end
 
 local function AddRoundKey(data, ciphers, round)
     for i = 0, 15 do
-        data[i] = gadd(data[i], ciphers[round*16 + i])
+        data[i] = gadd(data[i], ciphers[round*24 + i])
     end
 end
-local function KeySchedule(ciphers, round)
-    local prev = round - 1
-    local p, n = prev*24, round*24
-    -- Key Schedule Core    
-    --[[
-        This operation is used as an inner loop in the key schedule, and is done in the following manner:
 
-        The input is a 32-bit word and an iteration number i. The output is a 32-bit word.
-        Copy the input over to the output.
-        Use the above described rotate operation to rotate the output eight bits to the left
-        Apply Rijndael's S-box on all four individual bytes in the output word
-        On just the first (leftmost) byte of the output word, 
-        Exclusive OR the byte with 2 to the power of (i-1) in Rijndael's finite field. 
-        In other words, perform the rcon operation with i as the input, 
-        and exclusive or(XOR) the rcon output with the first byte of the output word
-    ]]
+local function getWord(k, i)
+    return k[i], k[i + 1], k[i + 2], k[i + 3]
+end
 
-    --[[
-        MAP:
-        00 01 02 03 04 05 
-        06 07 08 09 0A 0B 
-        0C 0D 0E 0F 10 11 
-        12 13 14 15 16 17
-    ]]
-    ciphers[n + 0x00] = gadd(ciphers[p + 0x00], sbox[ciphers[p + 0x0B]], rcon[round])
-    ciphers[n + 0x06] = gadd(ciphers[p + 0x06], sbox[ciphers[p + 0x11]])
-    ciphers[n + 0x0C] = gadd(ciphers[p + 0x0C], sbox[ciphers[p + 0x17]])
-    ciphers[n + 0x12] = gadd(ciphers[p + 0x12], sbox[ciphers[p + 0x05]])
-    --[[
-        We assign the value of the previous 4 bytes in the expanded key to t
-        We exclusive-OR t with the four-byte block n bytes before the new expanded key. 
-        This becomes the next 4 bytes in the expanded key
-    ]]
-    ciphers[n + 0x01] = gadd(ciphers[p + 0x01], ciphers[p + 0x00])
-    ciphers[n + 0x07] = gadd(ciphers[p + 0x07], ciphers[p + 0x06])
-    ciphers[n + 0x0D] = gadd(ciphers[p + 0x0D], ciphers[p + 0x0C])
-    ciphers[n + 0x13] = gadd(ciphers[p + 0x13], ciphers[p + 0x12])
+local function rotWord(a, b, c, d)
+    return b, c, d, a
+end 
 
-    ciphers[n + 0x02] = gadd(ciphers[p + 0x02], ciphers[p + 0x01])
-    ciphers[n + 0x08] = gadd(ciphers[p + 0x08], ciphers[p + 0x07])
-    ciphers[n + 0x0E] = gadd(ciphers[p + 0x0E], ciphers[p + 0x0D])
-    ciphers[n + 0x14] = gadd(ciphers[p + 0x14], ciphers[p + 0x13])
-    
-    ciphers[n + 0x03] = gadd(ciphers[p + 0x03], ciphers[p + 0x02])
-    ciphers[n + 0x09] = gadd(ciphers[p + 0x09], ciphers[p + 0x08])
-    ciphers[n + 0x0F] = gadd(ciphers[p + 0x0F], ciphers[p + 0x0E])
-    ciphers[n + 0x15] = gadd(ciphers[p + 0x15], ciphers[p + 0x14])
+local function subWord(a, b, c, d)
+    return sbox[a], sbox[b], sbox[c], sbox[d]
+end
 
-    ciphers[n + 0x04] = gadd(ciphers[p + 0x04], ciphers[p + 0x03])
-    ciphers[n + 0x0A] = gadd(ciphers[p + 0x0A], ciphers[p + 0x09])
-    ciphers[n + 0x10] = gadd(ciphers[p + 0x10], ciphers[p + 0x0F])
-    ciphers[n + 0x16] = gadd(ciphers[p + 0x16], ciphers[p + 0x15])
+local function xorWord(a, b, c, d, e, f, g, h)
+    return gadd(a, e), gadd(b, f), gadd(c, g), gadd(d, h)
+end
 
-    ciphers[n + 0x05] = gadd(ciphers[p + 0x05], ciphers[p + 0x04])
-    ciphers[n + 0x0B] = gadd(ciphers[p + 0x0B], ciphers[p + 0x0A])
-    ciphers[n + 0x11] = gadd(ciphers[p + 0x11], ciphers[p + 0x10])
-    ciphers[n + 0x17] = gadd(ciphers[p + 0x17], ciphers[p + 0x16])
+local function addWord(k, i, a, b, c, d)
+    k[i], k[i + 1], k[i + 2], k[i + 3] = a, b, c, d
+end
 
-    return cipherstore
+local function KeySchedule(k, rounds, nk)
+    local a, b, c, d
+    local i = nk
+    while i < (rounds + 1)*nk  do 
+        a, b, c, d = getWord(k, i - 4)
+        if(i % nk == 0) then
+            -- rotate the word
+            a, b, c, d = rotWord(a, b, c, d)
+            -- substitute the word
+            a, b, c, d = subWord(a, b, c, d)
+            -- rcon xor 
+            a = gadd(a, rcon[math.floor(i/nk)])
+        elseif (nk > 6*4 and i % nk == 16) then
+            a, b, c, d = subWord(a, b, c, d)
+        end
+        local e, f, g, h = getWord(k, i - nk)
+        a, b, c, d = xorWord(a, b, c, d, e, f, g, h)
+        addWord(k, i, a, b, c, d)
+        i = i + 4
+    end 
 end 
 
 
@@ -409,11 +354,9 @@ m.__index = m
 local function buildCiphers(cipher)
     local ciphers = {}
     for i = 0, 23 do
-        ciphers[i] = cipher[i]
+        ciphers[i] = cipher[i + 1]
     end
-    for round = 1, 12 do
-        KeySchedule(ciphers, round)
-    end  
+    KeySchedule(ciphers, 12, 24)
     return ciphers   
 end 
 
@@ -423,7 +366,21 @@ local function new(cipher)
     return aes 
 end 
 
+local function adjustData(data)
+    for i = 0, 15 do
+        data[i] = data[i + 1]
+    end 
+    return data
+end 
+local function readjustData(data)
+    for i = 15, 0, -1 do
+        data[i + 1] = data[i]
+    end
+end
+
+
 local function encrypt(self, data)
+    data = adjustData(data)
     AddRoundKey(data, self.ciphers, 0)
 
     for i = 1, 11 do
@@ -439,23 +396,26 @@ local function encrypt(self, data)
     ShiftRows(data)
 
     AddRoundKey(data, self.ciphers, 0xC)
+    return readjustData(data) 
 end
 
 
 local function decrypt(self, data)
+    data = adjustData(data)
     AddRoundKey(data, self.ciphers, 0xC)
-    InvShiftRows(data)
-    InvSubBytes(data)
 
     for i = 11, 1, -1 do
-        AddRoundKey(data, self.ciphers, i)
-        InvMixColumns(data)
         InvShiftRows(data)
         InvSubBytes(data)
+        AddRoundKey(data, self.ciphers, i)
+        InvMixColumns(data)
 
     end 
 
+    InvShiftRows(data)
+    InvSubBytes(data)
     AddRoundKey(data, self.ciphers, 0)
+    return readjustData(data) 
 end
 
 
