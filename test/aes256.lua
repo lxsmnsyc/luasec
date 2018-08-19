@@ -1,73 +1,43 @@
+
 local aes = require "luasec.src.aes256"
+local bit = require "bit"
+local hex = bit.tohex
 
-function dumpCipher(c)
+local function dump(data)
     local s = ""
-    for i = 1, 32 do
-        if(c[i] < 16) then s = s.."0" end
-        s = s..string.format("%x", c[i])
-        --s = s..string.char(d[i])
-    end 
-    return s
+    for i = 0, 15 do 
+        if data[i] < 16 then s = s.."0" end
+        s = s..string.format("%x", data[i])
+    end
+    return s 
 end
-
-function dump(d)
-    local s = ""
-    for i = 1, 16 do
-        if(d[i] < 16) then s = s.."0" end
-        s = s..string.format("%x", d[i])
-        --s = s..string.char(d[i])
+local crypt = aes.new(
+    0x01020304, 0x05060708, 0x10203040, 0x50607080, 
+    0x01020304, 0x05060708, 0x10203040, 0x50607080
+)
+print("Key: 01 02 03 04 05 06 07 08 10 20 30 40 50 60 70 80 1 02 03 04 05 06 07 08 10 20 30 40 50 60 70 80")
+local function roundKey(start)
+    local tbl = {}
+    for i = 0, 15 do 
+        tbl[i] = crypt.ciphers[start + i]
     end 
-    return s
-end 
-
-local cipher = {
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80,
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80
-}
-
-local crypt = aes.new(cipher)
-print("Key: "..dumpCipher(cipher))
-
-local data = {
-    0x01, 0x02, 0x03, 0x04,
-    0x02, 0x04, 0x07, 0x0B,
-    0x03, 0x07, 0x0E, 0x1A,
-    0x04, 0x0B, 0x1A, 0x40
-}
+    return dump(tbl)
+end
+local i = 0
+while i < #crypt.ciphers do
+    print("Key "..((i == 0) and "0" or "")..string.format("%x", i)..": "..roundKey(i))
+    i = i + 32
+end
 print("------------------------------------------------------------------")
-local base = dump(data)
-print("Before: "..base)
+local a, b, c, d = 0x01020304, 0x0204070B, 0x03070E1A, 0x040B1A40
 print("------------------------------------------------------------------")
-crypt:encrypt(data)
+print("Before: ", hex(a), hex(b), hex(c), hex(d))
 print("------------------------------------------------------------------")
-print("After: "..dump(data))
+a, b, c, d = crypt:encrypt(a, b, c, d)
 print("------------------------------------------------------------------")
-crypt:decrypt(data)
+print("After: \t", hex(a), hex(b), hex(c), hex(d))
 print("------------------------------------------------------------------")
-local result = dump(data)
-print("Decrypted: "..result)
+a, b, c, d = crypt:decrypt(a, b, c, d)
 print("------------------------------------------------------------------")
-print("Test Result: "..((result == base) and "Passed" or "Failed"))
-
-local data = {
-    0x1, 0x8, 0x9, 0x0,
-    0x2, 0x7, 0xA, 0xF,
-    0x3, 0x6, 0xB, 0xE,
-    0x4, 0x5, 0xC, 0xD
-}
+print("Decrypted: ", hex(a), hex(b), hex(c), hex(d))
 print("------------------------------------------------------------------")
-local base = dump(data)
-print("Before: "..base)
-print("------------------------------------------------------------------")
-crypt:encrypt(data)
-print("------------------------------------------------------------------")
-print("After: "..dump(data))
-print("------------------------------------------------------------------")
-crypt:decrypt(data)
-print("------------------------------------------------------------------")
-local result = dump(data)
-print("Decrypted: "..result)
-print("------------------------------------------------------------------")
-print("Test Result: "..((result == base) and "Passed" or "Failed"))

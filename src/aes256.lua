@@ -328,7 +328,7 @@ end
 local function KeySchedule(k, rounds, nk)
     local a, b, c, d
     local i = nk
-    while i < (rounds + 1)*nk  do 
+    while i < (rounds)*nk  do 
         a, b, c, d = getWord(k, i - 4)
         if(i % nk == 0) then
             -- rotate the word
@@ -354,10 +354,10 @@ m.__index = m
 local function buildCiphers(cipher)
     local ciphers = {}
     for i = 0, 31 do
-        ciphers[i] = cipher[i + 1]
+        ciphers[i] = cipher[i]
     end
     KeySchedule(ciphers, 14, 32)
-    return ciphers  
+    return ciphers   
 end 
 
 local function new(cipher)
@@ -366,60 +366,86 @@ local function new(cipher)
     return aes 
 end 
 
-local function adjustData(data)
-    for i = 0, 15 do
-        data[i] = data[i + 1]
-    end 
-    return data
-end 
-local function readjustData(data)
-    for i = 15, 0, -1 do
-        data[i + 1] = data[i]
-    end
-end
-
-
 local function encrypt(self, data)
-    data = adjustData(data)
     AddRoundKey(data, self.ciphers, 0)
-
     for i = 1, 13 do
         SubBytes(data)
         ShiftRows(data)
         MixColumns(data)
-
         AddRoundKey(data, self.ciphers, i)
-    
     end
-
     SubBytes(data)
     ShiftRows(data)
-
     AddRoundKey(data, self.ciphers, 0xE)
-    return readjustData(data) 
+    return data
 end
 
 
 local function decrypt(self, data)
-    data = adjustData(data)
     AddRoundKey(data, self.ciphers, 0xE)
-
     for i = 13, 1, -1 do
         InvShiftRows(data)
         InvSubBytes(data)
         AddRoundKey(data, self.ciphers, i)
         InvMixColumns(data)
-
     end 
-
     InvShiftRows(data)
     InvSubBytes(data)
     AddRoundKey(data, self.ciphers, 0)
-    return readjustData(data)
+    return data
 end
 
-m.new = new
-m.encrypt = encrypt
-m.decrypt = decrypt
+local function splitWord(w)
+    local a = RSHIFT(AND(w, 0xff000000), 24)
+    local b = RSHIFT(AND(w, 0xff0000), 16)
+    local c = RSHIFT(AND(w, 0xff00), 8)
+    local d = AND(w, 0xff)
+    return a, b, c, d
+end 
+
+local function mergeBytes(a, b, c, d)
+    a = LSHIFT(a, 24)
+    b = LSHIFT(b, 16)
+    c = LSHIFT(c, 8)
+    return OR(a, b, c, d)
+end
+
+local function getBlock(size, ...)
+    local k = {...}
+    local t = {}
+    local x = 1
+    local i = 0
+    while i < size do
+        t[i], t[i + 1], t[i + 2], t[i + 3] = splitWord(k[x])
+        x = x + 1
+        i = i + 4
+    end 
+    return t 
+end
+
+local function mergeBlock(b)
+    local d = {}
+    local x = 1
+    local i = 0
+    while i < 16 do
+        d[x] = mergeBytes(b[i], b[i + 1], b[i + 2], b[i + 3])
+        x = x + 1
+        i = i + 4
+    end 
+    return d  
+end
+
+m.new = function (a, b, c, d, e, f, g, h)
+    return new(getBlock(32, a, b, c, d, e, f, g, h))
+end
+
+m.encrypt = function (t, a, b, c, d)
+    local data = mergeBlock(encrypt(t, getBlock(16, a, b, c, d)))
+    return data[1], data[2], data[3], data[4]
+end
+m.decrypt = function (t, a, b, c, d)
+    local data = mergeBlock(decrypt(t, getBlock(16, a, b, c, d)))
+    return data[1], data[2], data[3], data[4]
+end
 
 return m
