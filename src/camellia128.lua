@@ -473,15 +473,11 @@ m.new = function (a, b, c, d)
 end
 
 m.encrypt = function (k, a, b, c, d)
-    local r = encrypt(k, oword(qword(a, b), qword(c, d)))
-    local rl, rr = r.left, r.right
-    return rl.left, rl.right, rr.left, rr.right
+    return encrypt(k, oword(qword(a, b), qword(c, d))):split()
 end
 
 m.decrypt = function (k, a, b, c, d)
-    local r = decrypt(k, oword(qword(a, b), qword(c, d)))
-    local rl, rr = r.left, r.right
-    return rl.left, rl.right, rr.left, rr.right
+    return decrypt(k, oword(qword(a, b), qword(c, d))):split()
 end
 
 return m

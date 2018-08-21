@@ -14,6 +14,9 @@ Includes (currently):
 - Camellia-128
 - Camellia-192
 - Camellia-256
+- ARIA-128
+- ARIA-192
+- ARIA-256
 
 I am currently writing an int64 emulator library so that every library can handle 64-bits of information
 (lua can only handle 2^53 bits)

@@ -21,6 +21,10 @@ local oword = require "luasec.src.oword"
 local MASK8 = qword(0x00000000, 0x0000000ff)
 local MASK32 = qword(0x00000000, 0xffffffff)
 
+local function mergeOword(a, b, c, d)
+    return oword(qword(a, b), qword(c, d))
+end
+
 --[[
     The 64-bit constants Sigma1, Sigma2, ..., Sigma6 are used as "keys"
    in the F-function.  These constant values are, in hexadecimal
@@ -500,21 +504,17 @@ end
 local m = {}
 m.__index = m 
 m.new = function (a, b, c, d, e, f, g, h)
-    local new = schedule(oword(qword(a, b), qword(c, d)), oword(qword(e, f), qword(g, h)))
+    local new = schedule(mergeOword(a, b, c, d), mergeOword(e, f, g, h))
     setmetatable(new, m)
     return new 
 end
 
 m.encrypt = function (k, a, b, c, d)
-    local r = encrypt(k, oword(qword(a, b), qword(c, d)))
-    local rl, rr = r.left, r.right
-    return rl.left, rl.right, rr.left, rr.right
+    return encrypt(k, mergeOword(a, b, c, d)):split()
 end
 
 m.decrypt = function (k, a, b, c, d)
-    local r = decrypt(k, oword(qword(a, b), qword(c, d)))
-    local rl, rr = r.left, r.right
-    return rl.left, rl.right, rr.left, rr.right
+    return decrypt(k, mergeOword(a, b, c, d)):split()
 end
 
 return m

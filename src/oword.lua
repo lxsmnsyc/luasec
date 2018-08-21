@@ -93,7 +93,10 @@ local mt = {
     end,
     __tostring = function (a)
         return tostring(a.left)..tostring(a.right)
-    end, 
+    end,  
+    __concat = function (a, b)
+        return tostring(a)..tostring(b)
+    end,
     __index = {
         rshift = function (a, n)
             local l, r = RSHIFT128(a.left, a.right, n)
@@ -110,6 +113,10 @@ local mt = {
         rol = function (a, n)
             local l, r = ROL128(a.left, a.right, n)
             return oword(l, r)
+        end,
+        split = function (w)
+            local a, b = w.left, w.right -- 64-bit
+            return a.left, a.right, b.left, b.right -- 32-bit
         end
     }
 }
